@@ -32,3 +32,5 @@ option('use-system-libraries', type: 'array',
 option('_without-fortran', type: 'boolean', value: false,
        description: 'If set to true, build without a Fortran compiler ' +
                     '(the deprecated `scipy.odr` will be missing)')
+option('variant', type: 'array', value: [],
+        description: 'Wheel variant keys')

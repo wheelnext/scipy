@@ -263,6 +263,18 @@ blas_opts = {'mkl': mkl_opts}
 mkl_version_req = '>=2023.0'  # see gh-24824
 mkl_may_use_sdl = not use_ilp64 and _threading_opt in ['auto', 'iomp']
 
+# Variant overrides options directly specified
+if blas_variant != ''
+  # hack until meson gets proper mkl support
+  if blas_variant == 'mkl'
+    blas_variant = 'mkl-sdl'
+  endif
+
+  blas_name = blas_variant
+  lapack_name = blas_variant
+  allow_noblas = false
+endif
+
 macOS13_3_or_later = false
 if host_machine.system() == 'darwin'
   r = run_command('xcrun', '-sdk', 'macosx', '--show-sdk-version', check: true)
