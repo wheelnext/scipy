@@ -14,3 +14,5 @@ option('use-system-libraries', type: 'array',
         choices : ['none', 'all', 'auto', 'boost.math', 'qhull'], value : ['none'],
         description: 'Choose which system libraries for subprojects ' +
                      'if they are available.')
+option('variant', type: 'array', value: [],
+        description: 'Wheel variant keys')

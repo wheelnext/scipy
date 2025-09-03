@@ -16,6 +16,32 @@ project(
 
 meson.add_dist_script('tools/trim_sdist_content.py')
 
+aarch64_variant = ''
+blas_variant = ''
+x86_64_variant = ''
+
+foreach variant_meta : get_option('variant')
+  split_meta = variant_meta.split('::')
+  if split_meta.length() != 3
+    error('Invalid variant key: ' + variant_meta)
+  endif
+  if split_meta[0].strip() == 'blas_lapack' and split_meta[1].strip() == 'provider'
+    blas_variant = split_meta[2].strip()
+  elif split_meta[0].strip() == 'x86_64' and split_meta[1].strip() == 'level'
+    if host_machine.cpu_family() != 'x86_64'
+      error('Variant valid only on x86_64: ' + variant_meta)
+    endif
+    x86_64_variant = split_meta[2].strip()
+  elif split_meta[0].strip() == 'aarch64' and split_meta[1].strip() == 'version'
+    if host_machine.cpu_family() != 'aarch64'
+      error('Variant valid only on aarch64: ' + variant_meta)
+    endif
+    aarch64_variant = split_meta[2].strip()
+  else
+    error('Unsupported variant key: ' + variant_meta)
+  endif
+endforeach
+
 py3 = import('python').find_installation(pure: false)
 py3_dep = py3.dependency()
 
@@ -87,6 +113,36 @@ endif
 # Adding at project level causes many spurious -lgfortran flags.
 add_languages('fortran', native: false)
 ff = meson.get_compiler('fortran')
+
+if x86_64_variant != '' or aarch64_variant != ''
+  if x86_64_variant != ''
+    variant_arch = 'x86_64'
+    variant_value = x86_64_variant
+  else
+    variant_arch = 'aarch64'
+    variant_value = aarch64_variant
+  endif
+
+  lang_mapping = {
+    'c': 'c',
+    'cpp': 'c++',
+    'fortran': 'fortran',
+  }
+  foreach meson_lang, plugin_lang : lang_mapping
+    cpu_flags = run_command(
+      py3, 'get_cpu_flags.py',
+      '--arch', variant_arch,
+      '--language', plugin_lang,
+      '--compiler-name', cc.get_id(),
+      '--compiler-version', cc.version(),
+      '--variant', variant_value,
+      capture: true,
+      check: true,
+    ).stdout().split()
+    add_project_arguments(cpu_flags, language: [meson_lang])
+  endforeach
+endif
+
 if ff.get_id() == 'gcc'
   # -std=legacy is not supported by all Fortran compilers, but very useful with
   # gfortran since it avoids a ton of warnings that we don't care about.

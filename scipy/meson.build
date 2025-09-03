@@ -235,6 +235,18 @@ f2py_gen = generator(generate_f2pymod,
 blas_name = get_option('blas')
 lapack_name = get_option('lapack')
 
+# Variant overrides options directly specified
+if blas_variant != ''
+  # hack until meson gets proper mkl support
+  if blas_variant == 'mkl'
+    blas_variant = 'mkl-sdl'
+  endif
+
+  blas_name = blas_variant
+  lapack_name = blas_variant
+  allow_noblas = false
+endif
+
 macOS13_3_or_later = false
 if host_machine.system() == 'darwin'
   r = run_command('xcrun', '-sdk', 'macosx', '--show-sdk-version', check: true)
