@@ -142,7 +142,7 @@ plugin-api = "provider_variant_aarch64.plugin:AArch64Plugin"
 
 [variant.providers.blas_lapack]
 requires = ["blas-lapack-variant-provider"]
-plugin-use = "build"
+install-time = false
 
 [variant.providers.x86_64]
 requires = ["provider-variant-x86-64"]
