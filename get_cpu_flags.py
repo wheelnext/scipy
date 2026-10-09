@@ -14,10 +14,10 @@ def main() -> None:
     args = argp.parse_args()
 
     if args.arch == "aarch64":
-        from provider_variant_aarch64.plugin import AArch64Plugin
+        from aarch64_variant_provider.plugin import AArch64Plugin
         plugin = AArch64Plugin()
     elif args.arch == "x86_64":
-        from provider_variant_x86_64.plugin import X8664Plugin
+        from x86_64_variant_provider.plugin import X8664Plugin
         plugin = X8664Plugin()
 
     vprops = [
