@@ -22,7 +22,6 @@ fi
 set -- "${@}" "-Cvariant-label=${LABEL}"
 
 if ! grep -q Ubuntu /etc/os-release; then
-	sudo xcode-select -s /Applications/Xcode_15.2.app
 	ln -s $(which gfortran-13) gfortran
 	export PATH=$PWD:$PATH
 	export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
