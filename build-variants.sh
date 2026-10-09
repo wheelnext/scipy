@@ -31,7 +31,7 @@ fi
 
 . tools/wheels/cibw_before_build.sh "${PWD}"
 export PKG_CONFIG_PATH=${pkgconf_path}:$(python -c "import sys; print(sys.prefix)")/lib/pkgconfig
-pip install build auditwheel delocate
+pip install build auditwheel delocate patchelf
 python -m build -w "${@}"
 mkdir wheelhouse
 
